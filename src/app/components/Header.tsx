@@ -1,12 +1,15 @@
-'use client'
-import { signOut, useSession } from 'next-auth/react'
+// 'use client'
+import { getServerSession } from 'next-auth'
+import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import { UserType } from '../types/type'
+import { nextAuthOptions } from '../lib/next-auth/options'
 
-const Header = () => {
-    const { data: session } = useSession()
-    const user = session?.user
+const Header = async () => {
+    const session = await getServerSession(nextAuthOptions)
+    const user = session?.user as UserType
     // console.log(user)
 
     return (
@@ -22,24 +25,23 @@ const Header = () => {
                     >
                         ホーム
                     </Link>
-                    {!user ? (
-                        <Link
-                            href="/login"
-                            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                        >
-                            ログイン
-                        </Link>
-                    ) : (
-                        ''
-                    )}
+
+                    <Link
+                        //next-authで用意されている
+                        href={user ? '/profile' : '/api/auth/signin'}
+                        className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                        {user ? 'プロフィール' : 'ログイン'}
+                    </Link>
 
                     {user ? (
-                        <button
-                            onClick={() => signOut({ callbackUrl: '/login' })}
+                        <Link
+                            //next-authで用意されている
+                            href={'/api/auth/signout'}
                             className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                         >
                             ログアウト
-                        </button>
+                        </Link>
                     ) : (
                         ''
                     )}

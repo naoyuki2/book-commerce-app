@@ -1,63 +1,35 @@
 // 'use client'
 
+import { getServerSession } from 'next-auth'
 import Book from './components/Book'
 import { getAllBooks } from './lib/microcms/client'
-import { BookType } from './types/type'
-
-// 疑似データ
-// const books = [
-//     {
-//         id: 1,
-//         title: 'Book 1',
-//         thumbnail: '/thumbnails/discord-clone-udemy.png',
-//         price: 2980,
-//         author: {
-//             id: 1,
-//             name: 'Author 1',
-//             description: 'Author 1 description',
-//             profile_icon: 'https://source.unsplash.com/random/2',
-//         },
-//         content: 'Content 1',
-//         created_at: new Date().toString(),
-//         updated_at: new Date().toString(),
-//     },
-//     {
-//         id: 2,
-//         title: 'Book 2',
-//         thumbnail: '/thumbnails/notion-udemy.png',
-//         price: 1980,
-//         author: {
-//             id: 2,
-//             name: 'Author 2',
-//             description: 'Author 2 description',
-//             profile_icon: 'https://source.unsplash.com/random/3',
-//         },
-//         content: 'Content 2',
-//         created_at: new Date().toString(),
-//         updated_at: new Date().toString(),
-//     },
-//     {
-//         id: 3,
-//         title: 'Book 3',
-//         price: 4980,
-//         thumbnail: '/thumbnails/openai-chatapplication-udem.png',
-//         author: {
-//             id: 3,
-//             name: 'Author 3',
-//             description: 'Author 3 description',
-//             profile_icon: 'https://source.unsplash.com/random/4',
-//         },
-//         content: 'Content 3',
-//         created_at: new Date().toString(),
-//         updated_at: new Date().toString(),
-//     },
-//     // 他の本のデータ...
-// ]
+import { BookType, PurchaseType, UserType } from './types/type'
+import { nextAuthOptions } from './lib/next-auth/options'
 
 // eslint-disable-next-line @next/next/no-async-client-component
 export default async function Home() {
     const { contents } = await getAllBooks()
-    // console.log(contents)
+    //useSessionはSSRで使えないので、getServerSessionを使う
+    const session = await getServerSession(nextAuthOptions)
+    // const user:UserType = session?.user このようにするとsessionが未定義の可能性があるので、下記のように書く
+    const user = session?.user as UserType //未定義ではない場合に型をUserTypeにする
+    let purchaseBookIds: string[]
+
+    if (user) {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/purchases/${user.id}`,
+            { cache: 'no-cache' }, //標準でSSR
+        )
+        const purchaseData = await response.json()
+        // console.log(purchaseData)
+
+        purchaseBookIds = purchaseData.map(
+            (purchaseBook: PurchaseType) => purchaseBook.bookId,
+        )
+        // console.log(purchaseBookIds)
+    } else {
+        purchaseBookIds = []
+    }
     return (
         <>
             <main className="flex flex-wrap justify-center items-center md:mt-32 mt-20">
@@ -65,7 +37,12 @@ export default async function Home() {
                     Book Commerce
                 </h2>
                 {contents.map((book: BookType) => (
-                    <Book key={book.id} book={book} />
+                    <Book
+                        key={book.id}
+                        book={book}
+                        //購入した本のIDが含まれている配列purchaseBookIdsの中にbook.idが含まれているかどうか
+                        isPurchased={purchaseBookIds.includes(book.id)}
+                    />
                 ))}
             </main>
         </>
