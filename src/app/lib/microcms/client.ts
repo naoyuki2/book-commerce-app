@@ -9,6 +9,9 @@ export const client = createClient({
 export const getAllBooks = async () => {
     const allBooks = await client.getList<BookType>({
         endpoint: 'bookcommerce',
+        customRequestInit: {
+            cache: 'no-cache', //SSRでキャッシュを使わないようにする、毎回APIを叩く
+        },
     })
     return allBooks
 }
@@ -16,6 +19,9 @@ export const getAllBooks = async () => {
 export const getDetailBook = async (contentId: string) => {
     const detailBook = await client.getListDetail<BookType>({
         endpoint: 'bookcommerce',
+        customRequestInit: {
+            cache: 'no-cache',
+        },
         contentId,
     })
     return detailBook
