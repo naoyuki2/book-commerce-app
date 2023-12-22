@@ -10,7 +10,9 @@ export const getAllBooks = async () => {
     const allBooks = await client.getList<BookType>({
         endpoint: 'bookcommerce',
         customRequestInit: {
-            cache: 'no-cache', //SSRでキャッシュを使わないようにする、毎回APIを叩く
+            next: {
+                revalidate: 3600, //1時間キャッシュ。ISRの実装
+            },
         },
     })
     return allBooks
