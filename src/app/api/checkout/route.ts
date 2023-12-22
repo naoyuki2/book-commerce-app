@@ -27,8 +27,8 @@ export async function POST(request: Request, response: Response) {
             ],
             mode: 'payment',
             //CHECKOUT_SESSION_IDはstripeのサーバーで生成される
-            success_url: `${process.env.NEXT_PUBLIC_API_URL}/book/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_API_URL}`,
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/book/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
         })
         return NextResponse.json({ checkout_url: session.url })
     } catch (error: any) {
