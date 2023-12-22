@@ -5,7 +5,7 @@ import React from 'react'
 //paramsのidは動的ルーティングの際に決めた名前[id]
 const DetailBook = async ({ params }: { params: { id: string } }) => {
     const book = await getDetailBook(params.id) //SSR
-    console.log(book)
+    // console.log(book)
     return (
         <div className="container mx-auto p-4">
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">

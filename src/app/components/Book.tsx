@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { BookType } from '../types/type'
+import { BookType, UserType } from '../types/type'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -9,13 +9,14 @@ import { useRouter } from 'next/navigation'
 type BookProps = {
     book: BookType
     isPurchased: boolean
+    user: UserType
 }
 
 // eslint-disable-next-line react/display-name
-const Book = ({ book, isPurchased }: BookProps) => {
+const Book = ({ book, isPurchased, user }: BookProps) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-    const { data: session } = useSession()
-    const user: any = session?.user
+    // const { data: session } = useSession()５回も呼ばれちゃうので、sessionをpropsで受け取る
+    // const user: any = session?.user
     const router = useRouter()
 
     const startCheckout = async () => {

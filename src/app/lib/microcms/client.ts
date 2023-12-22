@@ -22,7 +22,7 @@ export const getDetailBook = async (contentId: string) => {
     const detailBook = await client.getListDetail<BookType>({
         endpoint: 'bookcommerce',
         customRequestInit: {
-            cache: 'no-cache',
+            cache: 'no-cache', //購入直後に更新するべきだからSSR
         },
         contentId,
     })

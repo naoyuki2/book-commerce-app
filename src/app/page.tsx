@@ -13,7 +13,7 @@ export default async function Home() {
     const session = await getServerSession(nextAuthOptions)
     // const user:UserType = session?.user このようにするとsessionが未定義の可能性があるので、下記のように書く
     const user = session?.user as UserType //未定義ではない場合に型をUserTypeにする
-    let purchaseBookIds: string[]
+    let purchaseBookIds: string[] = []
 
     if (user) {
         const response = await fetch(
@@ -27,8 +27,6 @@ export default async function Home() {
             (purchaseBook: PurchaseType) => purchaseBook.bookId,
         )
         // console.log(purchaseBookIds)
-    } else {
-        purchaseBookIds = []
     }
     return (
         <>
@@ -42,6 +40,7 @@ export default async function Home() {
                         book={book}
                         //購入した本のIDが含まれている配列purchaseBookIdsの中にbook.idが含まれているかどうか
                         isPurchased={purchaseBookIds.includes(book.id)}
+                        user={user}
                     />
                 ))}
             </main>

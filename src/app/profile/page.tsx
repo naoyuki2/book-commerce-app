@@ -17,14 +17,14 @@ export default async function ProfilePage() {
             { cache: 'no-cache' }, //標準でSSR
         )
         const purchaseData = await response.json()
-        console.log(purchaseData)
+        // console.log(purchaseData)
         //Promise.allで非同期処理をすべて実行してから、配列に格納する
         purchasesDetailBooks = await Promise.all(
             purchaseData.map(async (purchase: PurchaseType) => {
                 return await getDetailBook(purchase.bookId)
             }),
         )
-        console.log(purchasesDetailBooks)
+        // console.log(purchasesDetailBooks)
     }
 
     return (
